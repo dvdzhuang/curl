@@ -94,6 +94,19 @@ struct Curl_tree *Curl_splay(struct curltime i,
   return t;
 }
 
+static void checkDuplicateInsert(struct Curl_tree *t, struct Curl_tree *node)
+{
+  if (!t)
+    return;
+  if (t == node)
+  {
+    fprintf(stdout, "bad insert!\n");
+    abort();
+  }
+  checkDuplicateInsert(t->smaller, node);
+  checkDuplicateInsert(t->larger, node);
+}
+
 /* Insert key i into the tree t. Return a pointer to the resulting tree or
  * NULL if something went wrong.
  *
@@ -108,6 +121,7 @@ struct Curl_tree *Curl_splayinsert(struct curltime i,
   }; /* will *NEVER* appear */
 
   DEBUGASSERT(node);
+  checkDuplicateInsert(t, node);
 
   if(t) {
     t = Curl_splay(i, t);
